@@ -1,0 +1,16 @@
+# Logs
+*.log
+
+# Dependency directory
+node_modules
+
+# Trash
+.DS_Store
+.idea
+.tmp
+build
+dist
+client
+
+# Test Files that should be ignored
+coverage
