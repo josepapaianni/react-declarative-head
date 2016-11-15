@@ -52,6 +52,7 @@ const generateComponents = (components) => {
 };
 
 let virtualHead;
+// TODO: Check removed components
 function headDiff(comps) {
   let diff = [];
   if (virtualHead) {
