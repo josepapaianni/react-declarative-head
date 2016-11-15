@@ -2,7 +2,6 @@
   "name": "react-declarative-head",
   "version": "1.0.0",
   "description": "Head side effects handled with a declarative component",
-  "main": "index.js",
   "dependencies": {
     "react": "15.3.2",
     "react-dom": "15.3.2",
@@ -34,6 +33,11 @@
     "webpack-node-externals": "1.5.4",
     "webpack-shell-plugin": "0.4.3"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "dist/react-declarative-head.js",
   "scripts": {
     "test": "NODE_ENV=test _mocha test/*.spec.js --compilers js:babel-register",
     "lint": "NODE_ENV=test eslint src/** test/*.js",
