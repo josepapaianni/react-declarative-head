@@ -1,7 +1,6 @@
-const React = require('react');
-const Component = React.Component;
+import React, { Component } from 'react';
 
-module.exports = function withSideEffect (reduceComponentsToState, handleStateChangeOnClient, mapStateOnServer) {
+export default function withSideEffect (reduceComponentsToState, handleStateChangeOnClient, mapStateOnServer) {
   if (typeof reduceComponentsToState !== 'function') {
     throw new Error('Expected reduceComponentsToState to be a function.')
   }
@@ -68,7 +67,7 @@ module.exports = function withSideEffect (reduceComponentsToState, handleStateCh
       }
 
       render () {
-        return <WrappedComp>{ this.props.children }</WrappedComp>;
+        return <WrappedComp>{this.props.children}</WrappedComp>
       }
     }
 

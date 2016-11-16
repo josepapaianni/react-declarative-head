@@ -30,12 +30,13 @@
     "nodemon": "1.11.0",
     "react-addons-test-utils": "15.3.2",
     "webpack": "^1.13.2",
+    "webpack-dev-middleware": "^1.8.4",
     "webpack-node-externals": "1.5.4",
     "webpack-shell-plugin": "0.4.3"
   },
   "files": [
-    "dist",
-    "src"
+    "lib/",
+    "README.md"
   ],
   "main": "dist/react-declarative-head.js",
   "scripts": {
@@ -46,8 +47,7 @@
     "coverage": "NODE_ENV=test istanbul cover _mocha -- test/*.spec.js --compilers js:babel-register",
     "watch": "./node_modules/.bin/webpack --watch --config ./config/webpack.development.js",
     "build": "./node_modules/.bin/webpack --config ./config/webpack.production.js",
-    "watch-client": "./node_modules/.bin/webpack --watch --config ./config/webpack.client.development.js",
-    "watch-prod": "NODE_ENV=production ./node_modules/.bin/webpack --watch --config ./config/webpack.development.js"
+    "watch-client": "./node_modules/.bin/webpack --watch --config ./config/webpack.client.js"
   },
   "author": "",
   "license": "ISC"

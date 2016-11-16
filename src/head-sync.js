@@ -1,12 +1,10 @@
-const createElement = require('react').createElement;
-const Children = require('react').Children;
-const ReactDOMServer = require('react-dom/server');
-const sideEffect = require('./side-effect');
-const shallowEqual = require('shallowequal');
+import React, { Children } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import sideEffect from './side-effect';
+import shallowEqual from 'shallowequal';
 
 // Plain empty component;
 const Head = props => null;
-
 const HEAD_ATTR = 'data-head-react';
 
 const REACT_CUSTOM_TAGS = {
@@ -14,7 +12,6 @@ const REACT_CUSTOM_TAGS = {
   httpEquiv: 'http-equiv',
 };
 
-// Helpers
 const generateComponents = (components) => {
   const buffer = [];
   const filteredTags = [];
@@ -28,13 +25,13 @@ const generateComponents = (components) => {
       case 'style':
       case 'script':
       case 'noscript':
-        component = tags[i].props.children ? createElement(tags[i].type, {
+        component = tags[i].props.children ? React.createElement(tags[i].type, {
           dangerouslySetInnerHTML: {__html: tags[i].props.children},
           'data-head-react': true,
         }) : tags[i];
         break;
       default:
-        component = createElement(tags[i].type, {
+        component = React.createElement(tags[i].type, {
           ...tags[i].props,
           'data-head-react': true,
         });
@@ -45,9 +42,13 @@ const generateComponents = (components) => {
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
     if (filteredTags.length === 0) filteredTags.push(element);
-    if (!filteredTags.some(obj => shallowEqual(buffer[i].props, obj.props))) filteredTags.push(element);
+    const notSameProps = !filteredTags.some(obj => shallowEqual(buffer[i].props, obj.props));
+    const notTitle = buffer[i].type === 'title' && !filteredTags.some(obj => obj.type === 'title');
+    const notBase = buffer[i].type === 'base' && !filteredTags.some(obj => obj.type === 'base');
+    if (notSameProps && (notTitle || notBase)) filteredTags.push(element);
   }
   filteredTags.reverse();
+  console.log(filteredTags)
   return filteredTags;
 };
 
@@ -74,7 +75,6 @@ function headDiff(comps) {
 }
 
 function updateTag(comp) {
-  console.log(comp)
   const headEl = document.head;
   const genericTag = comp.props.dangerouslySetInnerHTML;
   let query;
@@ -115,7 +115,6 @@ function getHeadStatic(comps) {
   return head;
 }
 
-// Reducers
 function reduceComponentsToState(headMountedInstances) {
   const headTags = headMountedInstances // Array of mounted instances
     .map(child => child.props.children) // Return each instance with children
@@ -147,4 +146,4 @@ function mapStateOnServer(comps) {
   };
 }
 
-module.exports = sideEffect(reduceComponentsToState, handleClientChange, mapStateOnServer)(Head);
+export default sideEffect(reduceComponentsToState, handleClientChange, mapStateOnServer)(Head);

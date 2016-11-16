@@ -2,12 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 const fs = require('fs');
 const WebpackShellPlugin = require('webpack-shell-plugin');
-var nodeExternals = require('webpack-node-externals');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   target: 'node',
   entry: [
-    './index-dev.js'
+    './server.js'
   ],
   externals: [
     nodeExternals(
