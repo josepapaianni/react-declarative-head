@@ -10,7 +10,7 @@ node_modules
 .tmp
 build
 dist
-client
+lib
 
 # Test Files that should be ignored
 coverage
