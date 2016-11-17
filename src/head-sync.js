@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React, {Children} from 'react';
 import ReactDOMServer from 'react-dom/server';
 import sideEffect from './side-effect';
 import shallowEqual from 'shallowequal';
@@ -20,6 +20,7 @@ const generateComponents = (components) => {
     let component;
     switch (tags[i].type) {
       case 'title':
+      case 'base':
         component = tags[i];
         break;
       case 'style':
@@ -39,25 +40,30 @@ const generateComponents = (components) => {
     buffer.push(component);
   }
 
+  // TODO: Check duplicated title
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
     if (filteredTags.length === 0) filteredTags.push(element);
-    const notSameProps = !filteredTags.some(obj => shallowEqual(buffer[i].props, obj.props));
-    const notTitle = buffer[i].type === 'title' && !filteredTags.some(obj => obj.type === 'title');
-    const notBase = buffer[i].type === 'base' && !filteredTags.some(obj => obj.type === 'base');
-    if (notSameProps && (notTitle || notBase)) filteredTags.push(element);
+    const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
+    const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
+    if (canTitle) {
+      filteredTags.push(element);
+    } else if (canBase) {
+      filteredTags.push(element);
+    } else if (!filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
+      filteredTags.push(element);
+    }
   }
   filteredTags.reverse();
-  console.log(filteredTags)
   return filteredTags;
 };
 
 let virtualHead;
-// TODO: Check removed components
 function headDiff(comps) {
-  let diff = [];
+  let addedTags = [];
+  let removedTags = [];
   if (virtualHead) {
-    diff = comps.filter((comp) => {
+    addedTags = comps.filter((comp) => {
       if (!comp.props.dangerouslySetInnerHTML) {
         const notSameProps = !virtualHead.some(item => shallowEqual(comp.props, item.props));
         return notSameProps ? comp : null;
@@ -67,19 +73,29 @@ function headDiff(comps) {
         return notSameChilds ? comp : null;
       }
     });
+    removedTags = virtualHead.filter((comp) => {
+      if (!comp.props.dangerouslySetInnerHTML) {
+        const notSameProps = !comps.some(item => shallowEqual(comp.props, item.props));
+        return notSameProps ? comp : null;
+      } else {
+        const notSameChilds = !comps.some(item =>
+          shallowEqual(comp.props.dangerouslySetInnerHTML, item.props.dangerouslySetInnerHTML));
+        return notSameChilds ? comp : null;
+      }
+    })
   } else {
-    diff = comps;
+    addedTags = comps;
   }
   virtualHead = comps;
-  return diff;
+  return {addedTags, removedTags};
 }
 
-function updateTag(comp) {
+function updateTag(comp, remove) {
   const headEl = document.head;
   const genericTag = comp.props.dangerouslySetInnerHTML;
   let query;
   for (let key in comp.props) {
-    if (key !== 'children' && key !== 'dangerouslySetInnerHTML') {
+    if (key !== 'children' && key !== 'dangerouslySetInnerHTML' && key !== 'data-head-react') {
       if (comp.props.hasOwnProperty(key)) {
         const htmlKey = REACT_CUSTOM_TAGS[key] ? REACT_CUSTOM_TAGS[key] : key;
         query = query ? `${query}[${htmlKey}='${comp.props[key]}']` : `[${htmlKey}='${comp.props[key]}']`;
@@ -87,9 +103,17 @@ function updateTag(comp) {
     }
   }
   const el = headEl.querySelectorAll(query)[0];
+
+  if (remove) {
+    el.parentNode.removeChild(el);
+    return;
+  }
+
+
   if (el && el.hasAttribute(HEAD_ATTR)) {
     el.removeAttribute(HEAD_ATTR);
   } else {
+
     const newTag = document.createElement(comp.type);
     for (let key in comp.props) {
       if (comp.props.hasOwnProperty(key) && key !== 'children' && key !== 'dangerouslySetInnerHTML') {
@@ -126,13 +150,16 @@ function reduceComponentsToState(headMountedInstances) {
 }
 
 function handleClientChange(comps) {
-  const diffed = headDiff(comps); // Get components diff
-  diffed.forEach((comp) => { // Update each diff tag
+  const diff = headDiff(comps); // Get components diff
+  diff.addedTags.forEach((comp) => { // Update each diff tag
     if (comp.type === 'title') {
       document.title = comp.props.children;
     } else {
       updateTag(comp);
     }
+  });
+  diff.removedTags.forEach((comp) => { // Remove unused tags
+    updateTag(comp, true);
   });
 }
 
