@@ -24,6 +24,8 @@ export default class Other extends Component {
         { !this.state.is ? <link rel="stylesheet" type="text/css" href="#" /> : null}
         { !this.state.is ? <link rel="stylesheet" type="text/css" href="asdasdasdsd" /> : null}
         <title>Heasdasdasdjopjle!</title>
+        { this.state.is ? <link rel="preconnect" href="https://www.google-analytics.com"/> : null}
+        <link rel="preconnect" href="https://www.google.com"/>
       </Head>
     )
   }

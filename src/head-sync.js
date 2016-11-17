@@ -35,14 +35,13 @@ const generateComponents = (components) => {
   });
 
   buffer.reverse();
-
   // TODO: refactor this loop
   const filteredTags = [];
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
-    if (filteredTags.length === 0) {
-      filteredTags.push(element);
-    } else {
+    // if (filteredTags.length === 0) {
+    //   filteredTags.push(element);
+    // } else {
       const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
       const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
       if (canTitle) {
@@ -52,7 +51,7 @@ const generateComponents = (components) => {
       } else if (element.type !== 'title' && element.type !== 'base' && !filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
         filteredTags.push(element);
       }
-    }
+    // }
   }
   filteredTags.reverse();
   return filteredTags;

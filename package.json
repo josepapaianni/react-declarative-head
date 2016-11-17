@@ -38,7 +38,7 @@
     "lib/",
     "README.md"
   ],
-  "main": "dist/react-declarative-head.js",
+  "main": "lib/react-declarative-head.js",
   "scripts": {
     "test": "NODE_ENV=test _mocha test/*.spec.js --compilers js:babel-register",
     "lint": "NODE_ENV=test eslint src/** test/*.js",
