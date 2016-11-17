@@ -22,6 +22,7 @@ export default class Other extends Component {
         <link rel="text/css" href="pasdsdapasdasdasdappa" />
         <link rel="text/css" href="papappa" />
         { !this.state.is ? <link rel="stylesheet" type="text/css" href="#" /> : null}
+        { !this.state.is ? <link rel="stylesheet" type="text/css" href="asdasdasdsd" /> : null}
         <title>Heasdasdasdjopjle!</title>
       </Head>
     )

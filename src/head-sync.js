@@ -13,51 +13,53 @@ const REACT_CUSTOM_TAGS = {
 };
 
 const generateComponents = (components) => {
-  const buffer = [];
-  const filteredTags = [];
-  const tags = components.reverse();
-  for (let i = 0; i < tags.length; i += 1) {
-    let component;
-    switch (tags[i].type) {
+  const buffer = components.map((comp) => {
+    switch (comp.type) {
       case 'title':
-      case 'base':
-        component = tags[i];
-        break;
+        return comp;
       case 'style':
       case 'script':
       case 'noscript':
-        component = tags[i].props.children ? React.createElement(tags[i].type, {
-          dangerouslySetInnerHTML: {__html: tags[i].props.children},
+        return comp.props.children ? React.createElement(comp.type, {
+          ...comp.props,
+          dangerouslySetInnerHTML: {__html: comp.props.children},
           'data-head-react': true,
-        }) : tags[i];
+        }) : comp;
         break;
       default:
-        component = React.createElement(tags[i].type, {
-          ...tags[i].props,
+        return React.createElement(comp.type, {
+          ...comp.props,
           'data-head-react': true,
         });
     }
-    buffer.push(component);
-  }
+  });
 
-  // TODO: Check duplicated title
+  buffer.reverse();
+
+  // TODO: refactor this loop
+  const filteredTags = [];
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
-    if (filteredTags.length === 0) filteredTags.push(element);
-    const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
-    const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
-    if (canTitle) {
+    if (filteredTags.length === 0) {
       filteredTags.push(element);
-    } else if (canBase) {
-      filteredTags.push(element);
-    } else if (!filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
-      filteredTags.push(element);
+    } else {
+      const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
+      const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
+      if (canTitle) {
+        filteredTags.push(element);
+      } else if (canBase) {
+        filteredTags.push(element);
+      } else if (element.type !== 'title' && element.type !== 'base' && !filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
+        filteredTags.push(element);
+      }
     }
   }
   filteredTags.reverse();
   return filteredTags;
 };
 
+
+// TODO: move compare method outside
 let virtualHead;
 function headDiff(comps) {
   let addedTags = [];
@@ -103,17 +105,13 @@ function updateTag(comp, remove) {
     }
   }
   const el = headEl.querySelectorAll(query)[0];
-
   if (remove) {
     el.parentNode.removeChild(el);
     return;
   }
-
-
   if (el && el.hasAttribute(HEAD_ATTR)) {
     el.removeAttribute(HEAD_ATTR);
   } else {
-
     const newTag = document.createElement(comp.type);
     for (let key in comp.props) {
       if (comp.props.hasOwnProperty(key) && key !== 'children' && key !== 'dangerouslySetInnerHTML') {
@@ -159,7 +157,9 @@ function handleClientChange(comps) {
     }
   });
   diff.removedTags.forEach((comp) => { // Remove unused tags
-    updateTag(comp, true);
+    if (comp.type !== 'title') {
+      updateTag(comp, true);
+    }
   });
 }
 
