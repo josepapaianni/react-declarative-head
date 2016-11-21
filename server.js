@@ -17,7 +17,7 @@ app.get('*', (req, res) => {
   const diffDate =  new Date() - initDate;
   console.log(diffDate);
 
-  res.send(`<!DOCTYPE><html><head>${Head.rewind().toStatic()}</head><body><div id="app-root">${reactHTML}</div>
+  res.send(`<!DOCTYPE><html><head>${Head.rewind()}</head><body><div id="app-root">${reactHTML}</div>
   <script src="client-bundle.js"></script>
   </body></html>`)
 });

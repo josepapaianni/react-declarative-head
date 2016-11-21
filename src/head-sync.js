@@ -1,9 +1,8 @@
-import React, {Children} from 'react';
-import ReactDOMServer from 'react-dom/server';
-import sideEffect from './side-effect';
 import shallowEqual from 'shallowequal';
+import ReactDOMServer from 'react-dom/server';
+import React, { Children } from 'react';
+import sideEffect from './side-effect';
 
-// Plain empty component;
 const Head = props => null;
 const HEAD_ATTR = 'data-head-react';
 
@@ -22,10 +21,9 @@ const generateComponents = (components) => {
       case 'noscript':
         return comp.props.children ? React.createElement(comp.type, {
           ...comp.props,
-          dangerouslySetInnerHTML: {__html: comp.props.children},
+          dangerouslySetInnerHTML: { __html: comp.props.children },
           'data-head-react': true,
         }) : comp;
-        break;
       default:
         return React.createElement(comp.type, {
           ...comp.props,
@@ -35,60 +33,48 @@ const generateComponents = (components) => {
   });
 
   buffer.reverse();
-  // TODO: refactor this loop
   const filteredTags = [];
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
     // if (filteredTags.length === 0) {
     //   filteredTags.push(element);
     // } else {
-      const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
-      const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
-      if (canTitle) {
-        filteredTags.push(element);
-      } else if (canBase) {
-        filteredTags.push(element);
-      } else if (element.type !== 'title' && element.type !== 'base' && !filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
-        filteredTags.push(element);
-      }
+    const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
+    const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
+    if (canTitle) {
+      filteredTags.push(element);
+    } else if (canBase) {
+      filteredTags.push(element);
+    } else if (element.type !== 'title' && element.type !== 'base' &&
+        !filteredTags.some(obj => shallowEqual(element.props, obj.props))) {
+      filteredTags.push(element);
+    }
     // }
   }
   filteredTags.reverse();
   return filteredTags;
 };
 
+function isComponentInCollection(comp, collection) {
+  if (!comp.props.dangerouslySetInnerHTML) {
+    return collection.some(item => shallowEqual(comp.props, item.props));
+  }
+  return collection.some(item =>
+    shallowEqual(comp.props.dangerouslySetInnerHTML, item.props.dangerouslySetInnerHTML));
+}
 
-// TODO: move compare method outside
 let virtualHead;
 function headDiff(comps) {
   let addedTags = [];
   let removedTags = [];
   if (virtualHead) {
-    addedTags = comps.filter((comp) => {
-      if (!comp.props.dangerouslySetInnerHTML) {
-        const notSameProps = !virtualHead.some(item => shallowEqual(comp.props, item.props));
-        return notSameProps ? comp : null;
-      } else {
-        const notSameChilds = !virtualHead.some(item =>
-          shallowEqual(comp.props.dangerouslySetInnerHTML, item.props.dangerouslySetInnerHTML));
-        return notSameChilds ? comp : null;
-      }
-    });
-    removedTags = virtualHead.filter((comp) => {
-      if (!comp.props.dangerouslySetInnerHTML) {
-        const notSameProps = !comps.some(item => shallowEqual(comp.props, item.props));
-        return notSameProps ? comp : null;
-      } else {
-        const notSameChilds = !comps.some(item =>
-          shallowEqual(comp.props.dangerouslySetInnerHTML, item.props.dangerouslySetInnerHTML));
-        return notSameChilds ? comp : null;
-      }
-    })
+    addedTags = comps.filter(comp => !isComponentInCollection(comp, virtualHead));
+    removedTags = virtualHead.filter(comp => !isComponentInCollection(comp, comps));
   } else {
     addedTags = comps;
   }
   virtualHead = comps;
-  return {addedTags, removedTags};
+  return { addedTags, removedTags };
 }
 
 function updateTag(comp, remove) {
@@ -164,12 +150,7 @@ function handleClientChange(comps) {
 
 // What returns when I call rewind()
 function mapStateOnServer(comps) {
-  return {
-    toStatic: () => getHeadStatic(comps),
-    // toComponent: () => {
-    //   return createElement('head', null, comps);
-    // }
-  };
+  return getHeadStatic(comps);
 }
 
 export default sideEffect(reduceComponentsToState, handleClientChange, mapStateOnServer)(Head);
