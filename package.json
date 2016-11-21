@@ -43,6 +43,7 @@
     "test": "NODE_ENV=test _mocha test/*.spec.js --compilers js:babel-register",
     "lint": "NODE_ENV=test eslint src/** test/*.js",
     "pretest": "NODE_ENV=test npm run build",
+    "prepublish": "npm run build",
     "posttest": "npm run lint",
     "coverage": "NODE_ENV=test istanbul cover _mocha -- test/*.spec.js --compilers js:babel-register",
     "watch": "./node_modules/.bin/webpack --watch --config ./config/webpack.development.js",
