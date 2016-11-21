@@ -55,4 +55,4 @@ app.get('*', (req, res) => {
 });
 ```
 
-If you are server rendering and forget to call `Head.rewind()` you'll get a memory leak.
+If you are server rendering and forget to call `Head.rewind()` after `renderToString()` you'll get a memory leak.
