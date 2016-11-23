@@ -48,7 +48,7 @@ module.exports = {
     //   }
     // }),
     new WebpackShellPlugin({
-      onBuildEnd: ['./node_modules/.bin/nodemon ./build/bundle.js']
+      onBuildEnd: ['./node_modules/.bin/nodemon ./build/bundle.js --watch ./server.js']
     })
   ],
   output: {

@@ -7,7 +7,7 @@ export default class App extends Component {
     return(
       <div>
         <Head>
-          <title>Hello Old Title!</title>
+          <title>Hello Old Titles!</title>
           <link rel="preconnect" href="https://www.google.com"/>
         </Head>
         <OtherComponent/>
