@@ -1,6 +1,6 @@
 {
   "name": "react-declarative-head",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Head side effects handled with a declarative component",
   "dependencies": {
     "react": "^15.3.2",
