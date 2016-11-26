@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Head from '../src/head-sync';
+const Head = require('../src/head-sync');
 import OtherComponent from './other'
 
 export default class App extends Component {

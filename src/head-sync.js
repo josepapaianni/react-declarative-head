@@ -153,4 +153,4 @@ function mapStateOnServer(comps) {
   return getHeadStatic(comps);
 }
 
-export default sideEffect(reduceComponentsToState, handleClientChange, mapStateOnServer)(Head);
+module.exports = sideEffect(reduceComponentsToState, handleClientChange, mapStateOnServer)(Head);
