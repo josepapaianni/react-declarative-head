@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Head from '../src/head-sync';
+const Head = require('../lib/react-declarative-head');
 
 export default class Other extends Component {
   constructor(){
