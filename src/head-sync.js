@@ -13,6 +13,7 @@ const REACT_CUSTOM_TAGS = {
 
 const generateComponents = (components) => {
   const buffer = components.map((comp) => {
+
     switch (comp.type) {
       case 'title':
         return comp;
@@ -20,7 +21,6 @@ const generateComponents = (components) => {
       case 'script':
       case 'noscript':
         return comp.props.children ? React.createElement(comp.type, {
-          ...comp.props,
           dangerouslySetInnerHTML: { __html: comp.props.children },
           'data-head-react': true,
         }) : comp;
