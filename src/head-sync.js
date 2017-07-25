@@ -13,7 +13,6 @@ const REACT_CUSTOM_TAGS = {
 
 const generateComponents = (components) => {
   const buffer = components.map((comp) => {
-
     switch (comp.type) {
       case 'title':
         return comp;
