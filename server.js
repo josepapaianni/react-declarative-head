@@ -8,15 +8,9 @@ const app = express();
 app.use(express.static('build'));
 
 app.get('*', (req, res) => {
-  const initDate = new Date();
-
   const reactHTML = ReactDOMServer.renderToString(
     <App />
   );
-
-  const diffDate =  new Date() - initDate;
-  console.log(diffDate);
-
   res.send(`<!DOCTYPE><html><head>${Head.rewind()}</head><body><div id="app-root">${reactHTML}</div>
   <script src="client-bundle.js"></script>
   </body></html>`)
