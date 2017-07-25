@@ -36,9 +36,6 @@ const generateComponents = (components) => {
   const filteredTags = [];
   for (let i = 0; i < buffer.length; i += 1) {
     const element = buffer[i];
-    // if (filteredTags.length === 0) {
-    //   filteredTags.push(element);
-    // } else {
     const canTitle = element.type === 'title' && !filteredTags.some(obj => obj.type === 'title');
     const canBase = element.type === 'base' && !filteredTags.some(obj => obj.type === 'base');
     if (canTitle) {
